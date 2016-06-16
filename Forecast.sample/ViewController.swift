@@ -17,7 +17,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         locationManagerInstance.prepareToGetLocation()
         
         if let location = locationManagerInstance.locationManager.location {
@@ -28,6 +27,7 @@ class ViewController: UIViewController {
         
         currentForecastInstance.getForecastFromAPI { (currentForecast) in
             print("end result --------> \(currentForecast.summary)")
+            self.updateUI(currentForecast)
         }
     }
 
@@ -35,5 +35,16 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    @IBOutlet weak var timeZoneLabel: UILabel!
+    @IBOutlet weak var apparentFLabel: UILabel!
+    @IBOutlet weak var summeryLabel: UILabel!
+    
+    func updateUI (forecastInfo : ForecastAtItsLocation) {
+        timeZoneLabel.text = forecastInfo.timezone
+        apparentFLabel.text = String( forecastInfo.apparentTemperature )
+        summeryLabel.text = forecastInfo.summary
+    }
+    
+    
 }
