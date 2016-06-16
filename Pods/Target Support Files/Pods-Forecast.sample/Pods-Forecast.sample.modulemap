@@ -1,0 +1,6 @@
+framework module Pods_Forecast_sample {
+  umbrella header "Pods-Forecast.sample-umbrella.h"
+
+  export *
+  module * { export * }
+}
