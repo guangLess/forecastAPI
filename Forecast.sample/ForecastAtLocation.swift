@@ -10,13 +10,13 @@ import Foundation
 
 struct ForecastAtItsLocation {
     var timezone: String
-    var apparentTemperature: String
+    var apparentTemperature: NSNumber
     var summary: String
     var weekForecasts = [Daily]()
 }
 
 struct Daily {
-    var time: String
-    var temperatureMin: String
-    var temperatureMax: String
+    var time: NSNumber
+    var temperatureMin: NSNumber
+    var temperatureMax: NSNumber
 }

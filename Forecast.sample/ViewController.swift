@@ -25,7 +25,9 @@ class ViewController: UIViewController {
             //locationManagerInstance.prepareToGetLocation()
         }
         
-        getForecastFromAPI()
+        getForecastFromAPI { (currentForecast) in
+            print("end result --------> \(currentForecast.summary)")
+        }
 
     }
 
@@ -34,7 +36,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func getForecastFromAPI() {
+    func getForecastFromAPI(completion: ( currentForecast:ForecastAtItsLocation ) -> Void) {
         let apiKey = ForecastApiKey()
 
         let params = "40.7834,-73.966"
@@ -42,6 +44,8 @@ class ViewController: UIViewController {
         
         //let requestUrl = "https://api.forecast.io/forecast/95e1ec396c42ac8713e4c8f56f3dde42/37.8267,-122.423"
         //print(requestUrl)
+        var weekForecast = [Daily]()
+        
         Alamofire.request(.GET, requestUrl)
             .validate()
             .responseJSON { response in
@@ -52,39 +56,35 @@ class ViewController: UIViewController {
                         if let daily = successResult["daily"]  {
                             if let days = daily {
                                 print(days["data"])
-                                if let eachDay = days["data"] {
-                                    print(eachDay!.lastObject!!["summary"])
+                                if let currentWeek = days["data"] {
+                                    print(currentWeek!.lastObject!!["summary"])
+                                    
+                                    let lastDay = (currentWeek?.lastObject)! as! [String : AnyObject] //as AnyObject
+                                    print (lastDay["summary"])
+                                    //let tempForecast = Daily(time: lastDay["time"] as! NSNumber, temperatureMin: lastDay["temperatureMin"] as! String, temperatureMax: lastDay["temperatureMax"] as! String)
+                                    //weekForecast.append(tempForecast)
+                                    
+                                    if let week = currentWeek {
+                                        for day in week as! [[String : AnyObject]] {
+                                             let dayInWeekForecast = Daily(time: day["time"] as! NSNumber, temperatureMin: day["temperatureMin"] as! NSNumber, temperatureMax: day["temperatureMax"] as! NSNumber)
+                                            weekForecast.append(dayInWeekForecast)
+                                            print(weekForecast.count)
+                                            if weekForecast.count == 8 {
+                                                let currently = successResult["currently"] as! [String : AnyObject]
+                                                let currentForecast = ForecastAtItsLocation(timezone: successResult["timezone"] as! String, apparentTemperature: currently["apparentTemperature"] as! NSNumber, summary: currently["summary"] as! String, weekForecasts: weekForecast)
+                                                completion(currentForecast: currentForecast)
+                                            
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                    //if let responseValue = response.result.value as! [String : AnyObject] {
-                   // print(responseValue)
-                        //for forcast in responseValue as! [[String:AnyObject]] {
-                          
-                            //var simplfiedWeekForecast = [Daily]()
-                            
-                            /*
-                            for eachDay in forcast["daily"] as! [[String : AnyObject]]  {
-                                let dailyForecast = Daily(time: eachDay["time"] as! String, temperatureMin: eachDay["temperatureMin"] as! String, temperatureMax: eachDay["temperatureMax"] as! String)
-                                    simplfiedWeekForecast.append(dailyForecast)
-                                }
-                            //TOFIX: this eachDay method needs to move to another method because the program wont run through this.
-                            */
-                        
-                           //let forecast = responseValue
-                    
-//                            let currentForecast = ForecastAtItsLocation(timezone: forecast["timezone"] as! String, apparentTemperature: forecast["apparentTemperature"] as! String, summary: forecast["summary"] as! String, weekForecasts: [] )
-//                            print (currentForecast)
-                       // }
-
-                       // }
-                    //}
-                case .Failure(let error) :
+                case .Failure(let error):
                     print(error)
                 }
         }
-        
     }
 }
 
