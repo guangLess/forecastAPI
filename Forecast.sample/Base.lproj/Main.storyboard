@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Uie-VG-ccG">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="cell" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Uie-VG-ccG">
                                 <rect key="frame" x="0.0" y="263" width="600" height="337"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </tableView>
@@ -45,6 +45,7 @@
                     <connections>
                         <outlet property="apparentFLabel" destination="NZL-L6-JQF" id="gXY-I4-LJ9"/>
                         <outlet property="summeryLabel" destination="oBK-sg-4VM" id="9qz-FM-pEO"/>
+                        <outlet property="tableView" destination="Uie-VG-ccG" id="SXm-JS-FDr"/>
                         <outlet property="timeZoneLabel" destination="HLd-fo-Csn" id="qcW-Eh-SlD"/>
                     </connections>
                 </viewController>

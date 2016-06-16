@@ -10,15 +10,27 @@ import UIKit
 import Alamofire
 
 //TODO: follow prolific style guid
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
 
+    @IBOutlet weak var timeZoneLabel: UILabel!
+    @IBOutlet weak var apparentFLabel: UILabel!
+    @IBOutlet weak var summeryLabel: UILabel!
+    @IBOutlet weak var tableView: UITableView!
+    
     let locationManagerInstance = CurrentLocation.sharedInstance
     let currentForecastInstance = ForecastDataStore.sharedInstance
     
+    var daysOfForecast = [Daily]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        locationManagerInstance.prepareToGetLocation()
         
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+
+        
+        locationManagerInstance.prepareToGetLocation()
         if let location = locationManagerInstance.locationManager.location {
             print(location.coordinate)
         } else {
@@ -27,18 +39,14 @@ class ViewController: UIViewController {
         
         currentForecastInstance.getForecastFromAPI { (currentForecast) in
             print("end result --------> \(currentForecast.summary)")
+            for eachDay in currentForecast.weekForecasts {
+                self.daysOfForecast.append(eachDay)
+            }
             self.updateUI(currentForecast)
+            self.tableView.reloadData()
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    @IBOutlet weak var timeZoneLabel: UILabel!
-    @IBOutlet weak var apparentFLabel: UILabel!
-    @IBOutlet weak var summeryLabel: UILabel!
     
     func updateUI (forecastInfo : ForecastAtItsLocation) {
         timeZoneLabel.text = forecastInfo.timezone
@@ -46,5 +54,19 @@ class ViewController: UIViewController {
         summeryLabel.text = forecastInfo.summary
     }
     
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return daysOfForecast.count
+    }
     
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath:  indexPath)
+        let dayForCell = daysOfForecast[indexPath.row]
+        
+        let cellText = String(format:"Low %@ High %@", dayForCell.temperatureMin, dayForCell.temperatureMax)
+        
+        cell.textLabel?.text = cellText
+        
+        //cell.textLabel?.text = daysOfForecast[indexPath.row].temperatureMax
+        return cell
+    }
 }
