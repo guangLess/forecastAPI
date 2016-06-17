@@ -2,4 +2,8 @@ Forecast.sample
 Show the current day forecast
 show the week of forecast from current day
 
+Note: 
+Support 9.0+ because of Alamofire version. 
+
+
 Try to learn generics

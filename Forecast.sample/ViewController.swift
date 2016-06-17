@@ -17,43 +17,32 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var summeryLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    let locationManagerInstance = CurrentLocation.sharedInstance
     let currentForecastInstance = ForecastDataStore.sharedInstance
-    
     var daysOfForecast = [Daily]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        refreshOnPull()
 
-        
-        locationManagerInstance.prepareToGetLocation()
-        if let location = locationManagerInstance.locationManager.location {
-            print(location.coordinate)
-        } else {
-            //locationManagerInstance.prepareToGetLocation()
-        }
-        
         currentForecastInstance.getForecastFromAPI { (currentForecast) in
             print("end result --------> \(currentForecast.summary)")
             for eachDay in currentForecast.weekForecasts {
                 self.daysOfForecast.append(eachDay)
-            }
+            } //TODO: if the data is bigger, use GCD
             self.updateUI(currentForecast)
             self.tableView.reloadData()
         }
     }
 
-    
     func updateUI (forecastInfo : ForecastAtItsLocation) {
         timeZoneLabel.text = forecastInfo.timezone
-        apparentFLabel.text = String( Int(forecastInfo.apparentTemperature))
+        apparentFLabel.text = String(format: "%d°f", Int(forecastInfo.apparentTemperature) )
         summeryLabel.text = forecastInfo.summary
     }
-    
+    //MARK: data/delegate
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return daysOfForecast.count
     }
@@ -61,15 +50,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath:  indexPath)
         let dayForCell = daysOfForecast[indexPath.row]
-        
         let min = round(Double(dayForCell.temperatureMin))
         let max = round(Double(dayForCell.temperatureMax))
-        
         let cellText = String(format:"Low %.0f High %.0f -%@", min, max, self.converUnixTimeToDate(dayForCell.time))
         cell.textLabel?.text = cellText
         return cell
     }
-    
     private func converUnixTimeToDate(unixTime : NSNumber ) -> String{
         let dateFormatter = NSDateFormatter()
         let date = NSDate(timeIntervalSince1970: Double(unixTime))
@@ -77,5 +63,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let convertedDateText = dateFormatter.stringFromDate(date)
         print("Converted Time \(convertedDateText)")
         return convertedDateText
+    }
+    //MARK: refresh
+    private func refreshOnPull () {
+        let refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "🌤☄️☀️")
+        refreshControl.tintColor = UIColor.yellowColor()
+        refreshControl.addTarget(self, action: #selector(ViewController.refresh), forControlEvents: UIControlEvents.ValueChanged)
+        tableView.addSubview(refreshControl)
+    }
+    func refresh(control:UIRefreshControl){
+        tableView.reloadData()
+        control.endRefreshing()
     }
 }

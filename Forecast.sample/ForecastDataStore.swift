@@ -10,23 +10,25 @@ import Foundation
 import Alamofire
 
 class ForecastDataStore {
-    
-    static let sharedInstance = ForecastDataStore()
     private let apiKey = ForecastApiKey()
+    static let sharedInstance = ForecastDataStore()
+    let locationManagerInstance = CurrentLocation.sharedInstance
+    let defaultCoordinateAsNewYork = "40.7834,-73.966"
     
-    func getCurrentLocation () -> Bool {
-        return true 
+    func getLocationCoordinate() -> String {
+        locationManagerInstance.prepareToGetLocation()
+        if let location = locationManagerInstance.locationManager.location {
+            print(location.coordinate)
+            let returnString = String(format: "%.4f,%.3f",location.coordinate.latitude, location.coordinate.longitude)
+            return returnString
+        } else {
+        return defaultCoordinateAsNewYork
+        }
     }
-    
-    
+ 
     func getForecastFromAPI(completion: ( currentForecast:ForecastAtItsLocation ) -> Void) {
-        //let apiKey = ForecastApiKey()
-        
-        let params = "40.7834,-73.966"
-        let requestUrl = String(format: "https://api.forecast.io/forecast/%@/%@",apiKey.forecastKey, params)
-        
-        //let requestUrl = "https://api.forecast.io/forecast/95e1ec396c42ac8713e4c8f56f3dde42/37.8267,-122.423"
-        //print(requestUrl)
+        //let params = getLocationCoordinate()
+        let requestUrl = String(format: "https://api.forecast.io/forecast/%@/%@",apiKey.forecastKey, getLocationCoordinate())
         var weekForecast = [Daily]()
         
         Alamofire.request(.GET, requestUrl)
@@ -44,8 +46,6 @@ class ForecastDataStore {
                                     
                                     let lastDay = (currentWeek?.lastObject)! as! [String : AnyObject] //as AnyObject
                                     print (lastDay["summary"])
-                                    //let tempForecast = Daily(time: lastDay["time"] as! NSNumber, temperatureMin: lastDay["temperatureMin"] as! String, temperatureMax: lastDay["temperatureMax"] as! String)
-                                    //weekForecast.append(tempForecast)
                                     //TOFIX: use generics or refactor thoes optional unwrapings.
                                     if let week = currentWeek {
                                         for day in week as! [[String : AnyObject]] {
