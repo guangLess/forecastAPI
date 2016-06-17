@@ -11,10 +11,9 @@ import CoreLocation
 
 class CurrentLocation: NSObject, CLLocationManagerDelegate {
     //TOFIX: locationManagerInstance should be named sharedInstance/
-
     static let sharedInstance = CurrentLocation()
-    
     let locationManager = CLLocationManager()
+    
     func prepareToGetLocation () {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
@@ -25,13 +24,9 @@ class CurrentLocation: NSObject, CLLocationManagerDelegate {
     }
     
     var currentCoordinate = CLLocationCoordinate2D()
-    //var coordinateData = [Double]()
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
-            print("Current location: \(location.coordinate)")
             currentCoordinate = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-            //coordinateData.append(location.coordinate.latitude)
-            //coordinateData.append(location.coordinate.longitude)
         } else {
             print("Can not find location")
         }

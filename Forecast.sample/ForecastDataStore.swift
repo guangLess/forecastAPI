@@ -37,13 +37,11 @@ class ForecastDataStore {
                 switch response.result{
                 case.Success:
                     if let successResult = response.result.value {
-                        print(successResult["currently"])
+                        //print(successResult["currently"])
                         if let daily = successResult["daily"]  {
                             if let days = daily {
-                                print(days["data"])
-                                if let currentWeek = days["data"] {
-                                    print(currentWeek!.lastObject!!["summary"])
-                                    
+                                //print(days["data"])
+                                if let currentWeek = days["data"] {                                    
                                     let lastDay = (currentWeek?.lastObject)! as! [String : AnyObject] //as AnyObject
                                     print (lastDay["summary"])
                                     //TOFIX: use generics or refactor thoes optional unwrapings.
@@ -51,7 +49,7 @@ class ForecastDataStore {
                                         for day in week as! [[String : AnyObject]] {
                                             let dayInWeekForecast = Daily(time: day["time"] as! NSNumber, temperatureMin: day["temperatureMin"] as! NSNumber, temperatureMax: day["temperatureMax"] as! NSNumber)
                                             weekForecast.append(dayInWeekForecast)
-                                            print(weekForecast.count)
+                                            //print(weekForecast.count)
                                             if weekForecast.count == 8 {
                                                 let currently = successResult["currently"] as! [String : AnyObject]
                                                 let currentForecast = ForecastAtItsLocation(timezone: successResult["timezone"] as! String, apparentTemperature: currently["apparentTemperature"] as! NSNumber, summary: currently["summary"] as! String, weekForecasts: weekForecast)

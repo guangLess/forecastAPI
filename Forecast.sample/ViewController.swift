@@ -61,7 +61,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let date = NSDate(timeIntervalSince1970: Double(unixTime))
         dateFormatter.dateStyle = NSDateFormatterStyle.FullStyle
         let convertedDateText = dateFormatter.stringFromDate(date)
-        print("Converted Time \(convertedDateText)")
         return convertedDateText
     }
     //MARK: refresh
