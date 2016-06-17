@@ -50,7 +50,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func updateUI (forecastInfo : ForecastAtItsLocation) {
         timeZoneLabel.text = forecastInfo.timezone
-        apparentFLabel.text = String( forecastInfo.apparentTemperature )
+        apparentFLabel.text = String( Int(forecastInfo.apparentTemperature))
         summeryLabel.text = forecastInfo.summary
     }
     
@@ -62,11 +62,20 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath:  indexPath)
         let dayForCell = daysOfForecast[indexPath.row]
         
-        let cellText = String(format:"Low %@ High %@", dayForCell.temperatureMin, dayForCell.temperatureMax)
+        let min = round(Double(dayForCell.temperatureMin))
+        let max = round(Double(dayForCell.temperatureMax))
         
+        let cellText = String(format:"Low %.0f High %.0f -%@", min, max, self.converUnixTimeToDate(dayForCell.time))
         cell.textLabel?.text = cellText
-        
-        //cell.textLabel?.text = daysOfForecast[indexPath.row].temperatureMax
         return cell
+    }
+    
+    private func converUnixTimeToDate(unixTime : NSNumber ) -> String{
+        let dateFormatter = NSDateFormatter()
+        let date = NSDate(timeIntervalSince1970: Double(unixTime))
+        dateFormatter.dateStyle = NSDateFormatterStyle.FullStyle
+        let convertedDateText = dateFormatter.stringFromDate(date)
+        print("Converted Time \(convertedDateText)")
+        return convertedDateText
     }
 }
